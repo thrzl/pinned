@@ -72,3 +72,10 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await        
 }
+//ChlorineDev's part here
+[get("/amogus")]
+async fn amogus() -> impl Responder {
+    HttpResponse::build(http::StatusCode::OK)
+        .content_type("text/html; charset=utf-8")
+        .body(r#"<iframe width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/5DlROhT8NgU?controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>"#)
+}
