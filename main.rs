@@ -72,7 +72,7 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await        
 }
-//ChlorineDev's part here
+//Paragonii's part here
 [get("/amogus")]
 async fn amogus() -> impl Responder {
     HttpResponse::build(http::StatusCode::OK)
