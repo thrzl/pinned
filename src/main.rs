@@ -1,11 +1,11 @@
+use actix_web::{get, http, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
+use cached::proc_macro::cached;
+use env_logger;
 use microserde::json;
 use reqwest::get;
 use select::document::Document;
 use select::predicate::{Attr, Class};
 use std::collections::HashMap;
-use actix_web::{get, http, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
-use cached::proc_macro::cached;
-use env_logger;
 
 #[cached(size = 1000)]
 async fn get_pinned(u: String) -> Vec<HashMap<String, String>> {
@@ -55,6 +55,27 @@ async fn get_pinned(u: String) -> Vec<HashMap<String, String>> {
         });
 
     repos
+}
+
+#[get("/")]
+async fn index() -> Result<HttpResponse, http::Error> {
+    Ok(HttpResponse::PermanentRedirect()
+        .append_header(("Location", "https://crust.terabyteis.me"))
+        .finish())
+}
+
+#[get("/hello")]
+async fn hello() -> impl Responder {
+    HttpResponse::build(http::StatusCode::OK)
+        .content_type("text/html; charset=utf-8")
+        .body(r#"<iframe width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/Yw6u6YkTgQ4?controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>"#)
+}
+
+#[get("/{user}")]
+async fn user(user: web::Path<String>) -> impl Responder {
+    let r: Vec<HashMap<String, String>> = get_pinned(user.to_string()).await;
+    json::to_string(&r)
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -63,6 +84,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .wrap(Logger::default())
+            // .service(index)
             .service(hello)
             .service(user)
     })
