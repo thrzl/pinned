@@ -62,9 +62,7 @@ async fn get_pinned(u: String) -> Vec<HashMap<String, String>> {
 
 #[get("/")]
 async fn index() -> Result<HttpResponse, http::Error> {
-    Ok(HttpResponse::PermanentRedirect()
-        .append_header(("Location", "https://crust.terabyteis.me"))
-        .finish())
+    Ok(HttpResponse::Ok().finish())
 }
 
 #[get("/hello")]
