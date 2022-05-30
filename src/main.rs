@@ -18,9 +18,21 @@ async fn get_pinned(u: String) -> Vec<HashMap<String, String>> {
             let mut repo = HashMap::new();
             node.find(Class("repo")).for_each(|node| {
                 repo.insert("name".to_string(), node.text().to_string());
-                repo.insert("full_name".to_string(), format!("{owner}/{name}", owner=u, name=repo["name"]));
-                repo.insert("link".to_string(), format!("https://github.com/{slug}", slug=repo["full_name"]));
-                repo.insert("image".to_string(), format!("https://opengraph.githubassets.com/1/{slug}", slug=repo["full_name"]));
+                repo.insert(
+                    "full_name".to_string(),
+                    format!("{owner}/{name}", owner = u, name = repo["name"]),
+                );
+                repo.insert(
+                    "link".to_string(),
+                    format!("https://github.com/{slug}", slug = repo["full_name"]),
+                );
+                repo.insert(
+                    "image".to_string(),
+                    format!(
+                        "https://opengraph.githubassets.com/1/{slug}",
+                        slug = repo["full_name"]
+                    ),
+                );
             });
             node.find(Class("pinned-item-desc")).for_each(|node| {
                 repo.insert("description".to_string(), node.text().trim().to_string());
