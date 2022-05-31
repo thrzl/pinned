@@ -43,7 +43,7 @@ async fn get_pinned(u: String) -> Vec<HashMap<String, String>> {
                 });
             node.find(Class("repo-language-color")).for_each(|node| {
                 repo.insert(
-                    "language-color".to_string(),
+                    "language_color".to_string(),
                     node.attr("style")
                         .unwrap()
                         .to_string()
