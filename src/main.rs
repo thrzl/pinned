@@ -2,15 +2,15 @@ use actix_web::{get, http, middleware::Logger, web, App, HttpResponse, HttpServe
 use cached::proc_macro::cached;
 use env_logger;
 use microserde::json;
-use surf::get;
+use reqwest::get;
 use select::document::Document;
 use select::predicate::{Attr, Class};
 use std::collections::HashMap;
 
 #[cached(size = 1000)]
 async fn get_pinned(u: String) -> Vec<HashMap<String, String>> {
-    let mut resp = get(format!("https://github.com/{u}")).await.unwrap();
-    let document = Document::from(&resp.body_string().await.unwrap().to_owned()[..]);
+    let resp = get(format!("https://github.com/{u}")).await.unwrap();
+    let document = Document::from(&resp.text().await.unwrap().to_owned()[..]);
     let mut repos: Vec<_> = Vec::new();
     document
         .find(Class("pinned-item-list-item"))
