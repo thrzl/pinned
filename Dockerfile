@@ -1,6 +1,8 @@
 FROM lukemathwalker/cargo-chef:latest-rust-slim-buster AS chef
 WORKDIR /pinned
 
+FROM alpine:3.16.0 as runtime
+RUN apk add libressl-dev
 
 FROM chef AS planner
 COPY . .
