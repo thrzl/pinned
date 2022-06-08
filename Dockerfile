@@ -1,4 +1,4 @@
-FROM lukemathwalker/cargo-chef:latest-rust-bullseye AS chef
+FROM lukemathwalker/cargo-chef:latest-rust-slim-buster AS chef
 WORKDIR /pinned
 
 
@@ -13,7 +13,7 @@ RUN cargo chef cook --release --recipe-path recipe.json
 COPY . .
 RUN cargo build --release --bin pinned
 
-FROM gcr.io/distroless/cc AS runtime
+FROM alpine:latest AS runtime
 WORKDIR /pinned
 COPY --from=builder /pinned/target/release/pinned /usr/local/bin/pinned
 ENTRYPOINT ["/usr/local/bin/pinned"]
