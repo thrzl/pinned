@@ -24,5 +24,6 @@ lto = "fat"
 codegen-units = 1
 panic = "abort"
 
-
-[features]
+[target.x86_64-unknown-linux-musl]
+linker = "/usr/bin/clang"
+rustflags = ["-Clink-arg=-fuse-ld=lld", "-Zshare-generics=y"]
