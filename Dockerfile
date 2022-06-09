@@ -1,6 +1,7 @@
 FROM clux/muslrust:nightly AS chef
 USER root
 RUN cargo install cargo-chef
+RUN apt update && apt install mold
 WORKDIR /pinned
 
 FROM chef AS planner
@@ -15,7 +16,6 @@ RUN cargo build --release --target x86_64-unknown-linux-musl --bin pinned
 
 FROM alpine AS prep
 RUN apk add libressl-dev
-RUN apk add mold
 RUN addgroup -S myuser && adduser -S myuser -G myuser
 
 FROM prep AS runtime
