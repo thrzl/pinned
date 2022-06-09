@@ -5,11 +5,18 @@ USER root
 RUN cargo install cargo-chef
 WORKDIR /pinned
 
-FROM chef AS planner
+FROM chef AS fleet
+USER root
+RUN git clone https://github.com/dimensionhq/fleet
+RUN cd fleet
+RUN cargo install --path .
+
+
+FROM fleet AS planner
 COPY . .
 RUN cargo chef prepare --recipe-path recipe.json
 
-FROM chef AS builder
+FROM fleet AS builder
 COPY --from=planner /pinned/recipe.json recipe.json
 # Notice that we are specifying the --target flag!
 RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
