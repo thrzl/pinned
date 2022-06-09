@@ -1,7 +1,6 @@
 use actix_web::{get, http, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use cached::proc_macro::cached;
 use env_logger;
-// use miniserde::json;
 use reqwest::get;
 use select::document::Document;
 use select::predicate::{Attr, Class};
