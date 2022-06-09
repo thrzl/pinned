@@ -1,18 +1,18 @@
 use actix_web::{get, http, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use cached::proc_macro::cached;
 use env_logger;
-use microserde::json;
+use miniserde::json;
 use reqwest::get;
 use select::document::Document;
 use select::predicate::{Attr, Class};
 use std::collections::HashMap;
 
 #[cached(size = 1000)]
-async fn get_pinned(u: String) -> Vec<HashMap<String, String>> {
+async fn get_pinned(u: String) -> String {
     let mut repos: Vec<_> = Vec::new();
     let resp = get(format!("https://github.com/{u}")).await.unwrap();
     if resp.status().as_u16() == 404 {
-        return repos
+        return json::to_string(&repos)
     }
     let document = Document::from(&resp.text().await.unwrap().to_owned()[..]);
     document
@@ -72,7 +72,7 @@ async fn get_pinned(u: String) -> Vec<HashMap<String, String>> {
             repos.push(repo);
         });
 
-    repos
+    json::to_string(&repos)
 }
 
 #[get("/")]
@@ -89,8 +89,7 @@ async fn hello() -> impl Responder {
 
 #[get("/{user}")]
 async fn user(user: web::Path<String>) -> impl Responder {
-    let r: Vec<HashMap<String, String>> = get_pinned(user.to_string()).await;
-    json::to_string(&r)
+    return get_pinned(user.to_string()).await;
 }
 
 #[actix_web::main]
