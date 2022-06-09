@@ -3,13 +3,13 @@
 FROM clux/muslrust:stable AS chef
 USER root
 RUN cargo install cargo-chef
-WORKDIR /pinned
 
 FROM chef AS fleet
 USER root
 RUN git clone https://github.com/dimensionhq/fleet
 RUN cd fleet
 RUN cargo install --path .
+WORKDIR /pinned
 
 
 FROM fleet AS planner
@@ -21,7 +21,7 @@ COPY --from=planner /pinned/recipe.json recipe.json
 # Notice that we are specifying the --target flag!
 RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
 COPY . .
-RUN cargo build --release --target x86_64-unknown-linux-musl --bin pinned
+RUN fleet build --release --target x86_64-unknown-linux-musl --bin pinned
 
 FROM alpine AS runtime
 RUN apk add libressl-dev
