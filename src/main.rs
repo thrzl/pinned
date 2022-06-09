@@ -9,9 +9,12 @@ use std::collections::HashMap;
 
 #[cached(size = 1000)]
 async fn get_pinned(u: String) -> Vec<HashMap<String, String>> {
-    let resp = get(format!("https://github.com/{u}")).await.unwrap();
-    let document = Document::from(&resp.text().await.unwrap().to_owned()[..]);
     let mut repos: Vec<_> = Vec::new();
+    let resp = get(format!("https://github.com/{u}")).await.unwrap();
+    if resp.status().as_u16() == 404 {
+        return repos
+    }
+    let document = Document::from(&resp.text().await.unwrap().to_owned()[..]);
     document
         .find(Class("pinned-item-list-item"))
         .for_each(|node| {
