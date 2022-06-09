@@ -6,9 +6,7 @@ RUN cargo install cargo-chef
 
 FROM chef AS fleet
 USER root
-RUN git clone https://github.com/dimensionhq/fleet
-RUN cd fleet
-RUN cargo install --path .
+RUN cargo install fleet-rs
 WORKDIR /pinned
 
 
