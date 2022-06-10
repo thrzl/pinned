@@ -1,7 +1,7 @@
 use actix_web::{get, http, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use cached::proc_macro::cached;
 use env_logger;
-use reqwest::get;
+use reqwest::get as r;
 use select::document::Document;
 use select::predicate::{Attr, Class};
 use std::collections::HashMap;
@@ -10,13 +10,13 @@ use json;
 #[cached(size = 1000)]
 async fn get_pinned(u: String) -> String {
     let mut repos: Vec<_> = Vec::new();
-    let resp = get(format!("https://github.com/{u}")).await.unwrap();
+    let resp = r(format!("https://github.com/{u}")).await.unwrap();
     if resp.status().as_u16() == 404 {
         return json::stringify(repos)
     }
     let document = Document::from(&resp.text().await.unwrap().to_owned()[..]);
     document
-        .find(Class("pinned-item-list-item"))
+        .find(Class("pinned-item-list-item")).into_selection().iter()
         .for_each(|node| {
             let mut repo = HashMap::new();
             node.find(Class("repo")).for_each(|node| {
