@@ -4,7 +4,7 @@
 # ❓ how to use
 just go to the path of the user you want to get the pinned repos for! e.g.
 ```
-https://pinnd.terabyteis.me/terabyte3
+https://pinned.terabyteis.me/terabyte3
 ```
 
 # installation
