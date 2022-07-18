@@ -7,7 +7,7 @@ use select::predicate::{Attr, Class};
 use std::collections::HashMap;
 use json;
 
-#[cached(size = 1000)]
+#[cached(size = 1000, time=3600)]
 async fn get_pinned(u: String) -> String {
     let mut repos: Vec<_> = Vec::new();
     let resp = r(format!("https://github.com/{u}")).await.unwrap();
@@ -80,13 +80,6 @@ async fn index() -> Result<HttpResponse, http::Error> {
     Ok(HttpResponse::Ok().finish())
 }
 
-#[get("/hello")]
-async fn hello() -> impl Responder {
-    HttpResponse::build(http::StatusCode::OK)
-        .content_type("text/html; charset=utf-8")
-        .body(r#"<iframe width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/Yw6u6YkTgQ4?controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>"#)
-}
-
 #[get("/{user}")]
 async fn user(user: web::Path<String>) -> impl Responder {
     return get_pinned(user.to_string()).await;
@@ -99,7 +92,6 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .wrap(Logger::default())
-            .service(hello)
             .service(user)
             .service(index)
     })
