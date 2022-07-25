@@ -1,22 +1,38 @@
 use actix_web::{get, http, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use cached::proc_macro::cached;
 use env_logger;
-use reqwest::get as r;
+use json;
+use reqwest::Client;
 use select::document::Document;
 use select::predicate::{Attr, Class};
 use std::collections::HashMap;
-use json;
 
-#[cached(size = 1000, time=3600)]
-async fn get_pinned(u: String) -> String {
+struct AppState {
+    client: Client,
+}
+
+#[cached(
+    size = 1000,
+    time = 3600,
+    time_refresh = true,
+    key = "String",
+    convert = r#"{ format!("{}", u) }"#
+)]
+async fn get_pinned(http: &Client, u: String) -> String {
     let mut repos: Vec<_> = Vec::new();
-    let resp = r(format!("https://github.com/{u}")).await.unwrap();
+    let resp = http
+        .get(format!("https://github.com/{u}"))
+        .send()
+        .await
+        .unwrap();
     if resp.status().as_u16() == 404 {
-        return json::stringify(repos)
+        return json::stringify(repos);
     }
     let document = Document::from(&resp.text().await.unwrap().to_owned()[..]);
     document
-        .find(Class("pinned-item-list-item")).into_selection().iter()
+        .find(Class("pinned-item-list-item"))
+        .into_selection()
+        .iter()
         .for_each(|node| {
             let mut repo = HashMap::new();
             node.find(Class("repo")).for_each(|node| {
@@ -81,8 +97,8 @@ async fn index() -> Result<HttpResponse, http::Error> {
 }
 
 #[get("/{user}")]
-async fn user(user: web::Path<String>) -> impl Responder {
-    return get_pinned(user.to_string()).await;
+async fn user(data: web::Data<AppState>, user: web::Path<String>) -> impl Responder {
+    return get_pinned(&data.client, user.to_string()).await;
 }
 
 #[actix_web::main]
@@ -91,6 +107,9 @@ async fn main() -> std::io::Result<()> {
     println!("Starting on port {}", 8080);
     HttpServer::new(|| {
         App::new()
+            .app_data(web::Data::new(AppState {
+                client: Client::new(),
+            }))
             .wrap(Logger::default())
             .service(user)
             .service(index)
