@@ -4,12 +4,12 @@
 # ❓ how to use
 just go to the path of the user you want to get the pinned repos for! e.g.
 ```
-https://pinned.terabyteis.me/terabyte3
+https://pinned.thrzl.xyz/thrzl
 ```
 
 # installation
 ```sh
-$ git clone https://github.com/terabyte3/pinned
+$ git clone https://github.com/thrzl/pinned
 $ cd pinned
 $ cargo run
 ```
