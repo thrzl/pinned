@@ -1,4 +1,5 @@
-# pinned
+![image](https://user-images.githubusercontent.com/73202594/190278389-657f0dde-fa66-470b-bf2e-b0d3fefee62a.png)
+---
 📌 github pinned repos, in rust
 
 # ❓ how to use
