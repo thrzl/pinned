@@ -1,5 +1,5 @@
 ![image](https://user-images.githubusercontent.com/73202594/190278389-657f0dde-fa66-470b-bf2e-b0d3fefee62a.png#gh-dark-mode-only)
-![image](https://user-images.githubusercontent.com/73202594/192046584-4dea7672-cf93-417f-9180-c55067bb51b0.png#gh-light-mode-only)
+![image](https://user-images.githubusercontent.com/73202594/192047092-6d222ba2-c2c5-4ff7-adbf-ff8ac0c1bcd0.png#gh-light-mode-only)
 
 ---
 📌 github pinned repos, in rust
