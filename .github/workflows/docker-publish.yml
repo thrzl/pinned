@@ -10,7 +10,9 @@ on:
     - cron: '45 3 * * *'
   push:
     branches: [ "master" ]
-    # Publish semver tags as releases.
+    paths-ignore:
+      - '.github/**'
+      - 'README.md'
     tags: [ 'v*.*.*' ]
   pull_request:
     branches: [ "master" ]
