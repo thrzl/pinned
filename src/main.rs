@@ -4,7 +4,7 @@ use env_logger;
 use json;
 use reqwest::Client;
 use select::document::Document;
-use select::predicate::{Attr, Class};
+use select::predicate::{Attr, Class, Predicate};
 use std::collections::HashMap;
 
 struct AppState {
@@ -35,11 +35,13 @@ async fn get_pinned(http: &Client, u: String) -> String {
         .iter()
         .for_each(|node| {
             let mut repo = HashMap::new();
-            node.find(Class("repo")).for_each(|node| {
-                repo.insert("name".to_string(), node.text().to_string());
+            node.find(Class("Link").and(Class("mr-1").and(Class("text-bold")))).for_each(|node| {
+                let full_name = &node.attr("href").unwrap_or("").to_string()[1..];
+                let name = full_name.split("/").into_iter().map(|x| {x.to_string()}).collect::<Vec<String>>()[1].clone();
+                repo.insert("name".to_string(),name);
                 repo.insert(
                     "full_name".to_string(),
-                    format!("{owner}/{name}", owner = u, name = repo["name"]),
+                    full_name.to_string(),
                 );
                 repo.insert(
                     "link".to_string(),
